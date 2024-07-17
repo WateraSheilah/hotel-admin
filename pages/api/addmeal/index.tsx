@@ -20,6 +20,8 @@ interface Category {
     categorylist: ObjectId[];
 }
 
+// Add an id in mongo such that its easy for paegnation
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
@@ -43,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         const db = await connectToDatabase();
-        const categoriesCollection = db.collection<Category>('categories');
+        const categoriesCollection = db.collection<Category>('foodcategory');
         const mealsCollection = db.collection<Meal>("meals");
 
         // Check if the category exists

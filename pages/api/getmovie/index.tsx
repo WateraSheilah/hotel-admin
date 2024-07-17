@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Retrieve only the name, category, and duration fields without the _id field
         const movies = await moviesCollection.find({},
             { projection:
-                    { name: 1,
+                    {name: 1,
                     category: 1,
                     duration: 1,
                     _id: 0 }

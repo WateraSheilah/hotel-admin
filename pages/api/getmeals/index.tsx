@@ -31,9 +31,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (meals.length > 0) {// Transform active field to "Available" or "Unavailable"
             const transformedMeals = meals.map((meal) => ({
+                category:meal.category,
                 foodname: meal.foodname,
                 price: meal.price,
-                active: meal.active ? "Available" : "Unavailable",
+                active: meal.active,
             }));
 
             res.status(200).json(transformedMeals);
