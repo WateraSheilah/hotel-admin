@@ -3,7 +3,6 @@ import { connectToDatabase } from "@/utils/db";
 
 interface Category {
     category: string;
-    categorylist: string[];
     startingTime: Date;
     endingTime: Date;
 }
@@ -52,7 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             category,
             startingTime: parsedStartingTime,
             endingTime: parsedEndingTime,
-            categorylist: [],
             createdAt: Date()
         };
 
