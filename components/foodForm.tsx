@@ -37,7 +37,7 @@ const FoodForm = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post('https://hotel-admin-opal.vercel.app/api/addmeal', form);
+            const response = await axios.post('http://172.40.1.223:80/api/addmeal', form);
             console.log('Meal added:', response.data);
             // Optionally, reset the form or show a success message
             setForm({
