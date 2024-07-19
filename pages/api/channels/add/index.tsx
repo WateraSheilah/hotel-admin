@@ -2,9 +2,18 @@ import {NextApiRequest, NextApiResponse} from "next";
 import {connectToDatabase} from "@/utils/db";
 
 interface Channel {
-    channelname: string;
-    image:string;
+    channelName: string;
+    channelImage:string;
+    channelLogo:string;
+    currentProgram:string;
+    nextProgram:string;
+    startTime:string;
+    endTime:string;
+    channelURL:string;
+    country:string;
+    channelNumber:string;
     category:string;
+    pgAge:string;
     status:string;
 
 
@@ -13,24 +22,59 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
-    const { channelname, image, category, status }=req.body;
+    const {
+        channelName,
+        channelImage,
+        channelLogo,
+        currentProgram,
+        nextProgram,
+        startTime,
+        endTime,
+        channelURL,
+        country,
+        channelNumber,
+        category,
+        pgAge,
+        status,
+    } =req.body;
 
-    if (!channelname || !image || !category || !status == null ) {
+    if (!channelName ||
+        !channelImage ||
+        !channelLogo ||
+        !currentProgram ||
+        !nextProgram ||
+        !startTime ||
+        !endTime ||
+        !channelURL ||
+        !country ||
+        !channelNumber ||
+        !category ||
+        !pgAge ||
+        !status ==null ) {
         return res.status(400).json({ error: "All fields must be provided" });
     }
     try{
         const db = await connectToDatabase();
         const channelCollection = db.collection<Channel>('channels');
 
-        const existingCategory = await channelCollection.findOne({ channelname });
+        const existingCategory = await channelCollection.findOne({ channelName });
 
         if (existingCategory) {
-            return res.status(400).json({ error: `Category '${channelname}' already exists` });
+            return res.status(400).json({ error: `Category '${channelName}' already exists` });
         }
         const newChannel: Channel = {
-            channelname,
-            image,
+            channelName,
+            channelImage,
+            channelLogo,
+            currentProgram,
+            nextProgram,
+            startTime,
+            endTime,
+            channelURL,
+            country,
+            channelNumber,
             category,
+            pgAge,
             status,
         };
         const result = await channelCollection.insertOne(newChannel);

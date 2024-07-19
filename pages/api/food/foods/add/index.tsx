@@ -6,6 +6,8 @@ interface Meal {
     _id?: ObjectId;
     category: string;
     components: string;
+    //subcategory eg salads
+    //image
     foodname: string;
     notes: string;
     description: string;

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/utils/db";
 
 interface Category {
-    name: string;
+    channelCategoryName: string;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -10,23 +10,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    const { name } = req.body;
+    const { channelCategoryName } = req.body;
 
     // Validate the incoming data
-    if (!name) {
+    if (!channelCategoryName) {
         return res.status(400).json({ error: 'All fields must be provided' });
     }
     try {
         const db = await connectToDatabase();
-        const categoriesCollection = db.collection<Category>('channelcategory');
+        const categoriesCollection = db.collection<Category>('channelCategory');
 
-        const existingCategory = await categoriesCollection.findOne({ name });
+        const existingCategory = await categoriesCollection.findOne({ channelCategoryName });
         if (existingCategory) {
-            return res.status(400).json({ error: `Category '${name}' already exists` });
+            return res.status(400).json({ error: `Category '${channelCategoryName}' already exists` });
         }
 
         const newCategory = {
-            name,
+            channelCategoryName,
             createdAt: Date()
         };
 

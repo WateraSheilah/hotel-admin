@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/utils/db";
 
 interface Category {
     category: string;
+    //image
     startingTime: Date;
     endingTime: Date;
 }

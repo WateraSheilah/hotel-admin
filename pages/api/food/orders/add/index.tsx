@@ -10,6 +10,9 @@ interface Order {
     state: string;
     orderDate: Date;
     totalAmount: number;
+    //quantity
+    //order items
+    //orderID attached to TV
 }
 // Add tv id for authentication
 
