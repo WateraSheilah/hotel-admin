@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         !channelNumber ||
         !category ||
         !pgAge ||
-        !status ==null ) {
+        status ==null ) {
         return res.status(400).json({ error: "All fields must be provided" });
     }
     try{
