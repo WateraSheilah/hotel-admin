@@ -1,20 +1,28 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/utils/db";
+import { ObjectId } from "mongodb";
+
+interface ProgramDetails {
+    start_time: string;
+    end_time: string;
+    image: string;
+    pg: number;
+}
 
 interface Channel {
-    channelName: string;
-    channelImage: string;
-    channelLogo: string;
-    currentProgram: string;
-    nextProgram: string;
-    startTime: string;
-    endTime: string;
-    channelURL: string;
+    name: string;
+    logo: string;
+    url: string;
+    status: boolean;
     country: string;
-    channelNumber: string;
+    temp_current_pg: ProgramDetails;
+    temp_next_pg: ProgramDetails;
     category: string;
-    pgAge: string;
-    status: string;
+}
+
+interface Category {
+    _id: ObjectId;
+    type: string;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -23,71 +31,71 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const {
-        channelName,
-        channelImage,
-        channelLogo,
-        currentProgram,
-        nextProgram,
-        startTime,
-        endTime,
-        channelURL,
-        country,
-        channelNumber,
-        category,
-        pgAge,
+        name,
+        logo,
+        url,
         status,
+        country,
+        temp_current_pg,
+        temp_next_pg,
+        type
     } = req.body;
 
     if (
-        !channelName ||
-        !channelImage ||
-        !channelLogo ||
-        !currentProgram ||
-        !nextProgram ||
-        !startTime ||
-        !endTime ||
-        !channelURL ||
+        !name ||
+        !logo ||
+        !url ||
+        status === undefined ||
         !country ||
-        !channelNumber ||
-        !category ||
-        !pgAge ||
-        status == null
+        !temp_current_pg ||
+        !temp_next_pg ||
+        !type
     ) {
         return res.status(400).json({ error: "All fields must be provided" });
     }
 
+    if (
+        !temp_current_pg.start_time ||
+        !temp_current_pg.end_time ||
+        !temp_current_pg.image ||
+        !temp_current_pg.pg ||
+        !temp_next_pg.start_time ||
+        !temp_next_pg.end_time ||
+        !temp_next_pg.image ||
+        !temp_next_pg.pg
+    ) {
+        return res.status(400).json({ error: "All fields in temp_current_pg and temp_next_pg must be provided" });
+    }
+
     try {
         const db = await connectToDatabase();
-        const channelCollection = db.collection<Channel>('channels');
+        const channelsCollection = db.collection<Channel>('channels');
+        const categoriesCollection = db.collection<Category>('channel_categories');
 
-        const existingChannel = await channelCollection.findOne({ channelName });
-        const existingCategory = await channelCollection.findOne({ category });
+        const category = await categoriesCollection.findOne({ type });
 
-        if (existingChannel) {
-            return res.status(400).json({ error: `Channel '${channelName}' already exists` });
+        if (!category) {
+            return res.status(400).json({ error: `Category '${type}' does not exist` });
         }
 
-        if (existingCategory) {
-            return res.status(400).json({ error: `Category '${category}' already exists` });
+        const existingChannel = await channelsCollection.findOne({ name });
+
+        if (existingChannel) {
+            return res.status(400).json({ error: `Channel '${name}' already exists` });
         }
 
         const newChannel: Channel = {
-            channelName,
-            channelImage,
-            channelLogo,
-            currentProgram,
-            nextProgram,
-            startTime,
-            endTime,
-            channelURL,
-            country,
-            channelNumber,
-            category,
-            pgAge,
+            name,
+            logo,
+            url,
             status,
+            country,
+            temp_current_pg,
+            temp_next_pg,
+            category: category._id.toString()
         };
 
-        const result = await channelCollection.insertOne(newChannel);
+        const result = await channelsCollection.insertOne(newChannel);
         if (result.acknowledged) {
             res.status(200).json({ message: 'Channel successfully added', channelId: result.insertedId });
         } else {
